@@ -29,6 +29,10 @@ onboard_led.value(0)
 external_led = machine.Pin(15, machine.Pin.OUT)
 external_led.value(0)
 
+timer=machine.Timer()
+timer2=machine.Timer()
+timer3=machine.Timer()
+
 def mycallback(t):
     print('mycallback')
     timer2.deinit()
@@ -60,9 +64,9 @@ def mycallback3(t):
 def Pb_Switch_INT(pin):         # PB_Switch Interrupt handler
     global Pb_Switch_State      # reference the global variable
     global Shutdown_Strip
-    global timer
-    global timer2
-    global timer3
+#     global timer=machine.Timer()
+#     global timer2=machine.Timer()
+#     global timer3=machine.Timer()
     
     Shutdown_Strip = 0
     Pb_Switch.irq(handler = None) # Turn off the handler while it is executing
@@ -71,9 +75,12 @@ def Pb_Switch_INT(pin):         # PB_Switch Interrupt handler
         Pb_Switch_State = 1     # Update current state of switch
         onboard_led.value(1)    # Do required action here
         external_led.value(1)
-        timer=machine.Timer(period=5000, mode=machine.Timer.ONE_SHOT, callback=mycallback)
-        timer2=machine.Timer(period=100, mode=machine.Timer.PERIODIC, callback=mycallback2)
-        timer3=machine.Timer(period=2000, mode=machine.Timer.ONE_SHOT, callback=mycallback3)
+        timer.deinit()
+        timer.init(period=5000, mode=machine.Timer.ONE_SHOT, callback=mycallback)
+        timer2.deinit()
+        timer2.init(period=100, mode=machine.Timer.PERIODIC, callback=mycallback2)
+        timer3.deinit()
+        timer3.init(period=2000, mode=machine.Timer.ONE_SHOT, callback=mycallback3)
         print("ON")             # Do required action here
 
     elif (Pb_Switch.value() == 0) and (Pb_Switch_State == 1): # Pb_Switch is not-active (Low) and Pb_Switch State is currently High
@@ -99,3 +106,5 @@ Shutdown_Strip = 0
 
 while True:
     utime.sleep(.0001)
+
+
